@@ -9,13 +9,17 @@ import numpy.random
 Neural Network
 """
 
+
 class NeuralNetwork:
     def __init__(self, layers):
         self.layers = layers
 
-        self.weights = [np.random.random((iv, self.layers[i-1])) for i, iv in enumerate(self.layers)]
-        self.bias = [np.random.random((iv, 1)) for i, iv in enumerate(self.layers)]
-        self.activ = [np.zeros(iv) for i, iv in enumerate(self.layers)]
+        self.weights = [np.random.random((iv, self.layers[i-1]))
+                        for i, iv in enumerate(self.layers)]
+        self.bias = [np.random.random((iv, 1))
+                     for i, iv in enumerate(self.layers)]
+        self.activ = [np.zeros(iv)
+                      for i, iv in enumerate(self.layers)]
         self.errors = [[]] * len(self.layers)
 
     def activate(self, z_val):
@@ -123,7 +127,8 @@ class NeuralNetwork:
 
             for j in range(rows):
                 for k in range(cols):
-                    self.cost_w[l][j][k] = self.activ[l-1][k] * self.errors[l][j]
+                    self.cost_w[l][j][k] = \
+                        self.activ[l-1][k] * self.errors[l][j]
 
     def train(self, training_set, its=300, step=0.5):
         """
@@ -145,8 +150,10 @@ class NeuralNetwork:
             if it % 10 == 0:
                 print("Iterations:", it)
 
-            sum_cost_w = [np.zeros((iv, self.layers[i-1])) for i, iv in enumerate(self.layers)]
-            sum_cost_b = [np.zeros((iv, 1)) for i, iv in enumerate(self.layers)]
+            sum_cost_w = [np.zeros((iv, self.layers[i-1]))
+                          for i, iv in enumerate(self.layers)]
+            sum_cost_b = [np.zeros((iv, 1))
+                          for i, iv in enumerate(self.layers)]
 
             # Get the weights and bias
             for i in training_set:
