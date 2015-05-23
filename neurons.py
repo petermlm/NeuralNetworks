@@ -27,12 +27,13 @@ if __name__ == "__main__":
     per = Perceptron(np.array([-2, -2]), 3)
     sig = Sigmoid(np.array([-2, -2]), 3)
 
-    print(per.feed(np.array([0, 0])))
-    print(per.feed(np.array([0, 1])))
-    print(per.feed(np.array([1, 0])))
-    print(per.feed(np.array([1, 1])))
+    # Output of neurons with given input
+    print(0, 0, per.feed(np.array([0, 0])))
+    print(0, 1, per.feed(np.array([0, 1])))
+    print(1, 0, per.feed(np.array([1, 0])))
+    print(1, 1, per.feed(np.array([1, 1])))
 
-    print(sig.feed(np.array([0, 0])))
-    print(sig.feed(np.array([0, 1])))
-    print(sig.feed(np.array([1, 0])))
-    print(sig.feed(np.array([1, 1])))
+    print(0, 0, sig.feed(np.array([0, 0])))
+    print(0, 1, sig.feed(np.array([0, 1])))
+    print(1, 0, sig.feed(np.array([1, 0])))
+    print(1, 1, sig.feed(np.array([1, 1])))
