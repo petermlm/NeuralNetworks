@@ -94,7 +94,7 @@ class NeuralNetwork:
 
         for l in range(L-1, 0, -1):
             # Bring error back
-            error_back = self.weights[l+1].T * self.errors[l+1]
+            error_back = np.dot(self.weights[l+1].T, self.errors[l+1])
 
             # Calculate sigma vector
             sig_vec = []
