@@ -14,11 +14,11 @@ class NeuralNetwork:
     def __init__(self, layers):
         self.layers = layers
 
-        self.weights = [np.random.random((iv, self.layers[i-1]))
+        self.weights = [2*np.random.random((iv, self.layers[i-1])) - 1
                         for i, iv in enumerate(self.layers)]
-        self.bias = [np.random.random((iv, 1))
+        self.bias = [2*np.random.random((iv, 1)) - 1
                      for i, iv in enumerate(self.layers)]
-        self.activ = [np.zeros(iv)
+        self.activ = [np.zeros((iv, 1))
                       for i, iv in enumerate(self.layers)]
         self.errors = [[]] * len(self.layers)
 
@@ -35,7 +35,7 @@ class NeuralNetwork:
         """
 
         # Activation for the first layer is just the values of input
-        self.activ[0] = input_vals[:]
+        self.activ[0] = np.array(input_vals[:])
 
         # For the following layers, use the normal feed function
         for k, layer in enumerate(self.layers[1:]):
@@ -76,14 +76,10 @@ class NeuralNetwork:
         deriv_vec = self.activ[L] - target
 
         # Calculate sigma vector
-        sig_vec = []
-        for j in range(self.layers[L]):
-            z = np.dot(self.weights[L][j], self.activ[L-1])
-            z += self.bias[L][j]
+        sig_vec = self.activate(np.dot(self.weights[L], self.activ[L-1]) +
+                                self.bias[L])
 
-            sig_vec.append(self.activate(z))
-
-        self.errors[L] = sig_vec * deriv_vec
+        self.errors[L] = deriv_vec * sig_vec
 
     def step2(self):
         """
@@ -97,12 +93,8 @@ class NeuralNetwork:
             error_back = np.dot(self.weights[l+1].T, self.errors[l+1])
 
             # Calculate sigma vector
-            sig_vec = []
-            for j in range(self.layers[l]):
-                z = np.dot(self.weights[l][j], self.activ[l-1])
-                z += self.bias[l][j]
-
-                sig_vec.append(self.activate(z))
+            sig_vec = self.activate(np.dot(self.weights[l], self.activ[l-1]) +
+                                    self.bias[l])
 
             self.errors[l] = error_back * sig_vec
 
