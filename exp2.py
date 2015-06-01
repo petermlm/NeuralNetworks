@@ -5,34 +5,40 @@ from NN import NeuralNetwork
 
 
 def printResults(input_vec, results):
-    arrow = ["", "", ""]
-    if results[0] > results[1] and results[0] > results[2]:
-        arrow[0] = " <---"
-    elif results[1] > results[0] and results[1] > results[2]:
-        arrow[1] = " <---"
-    elif results[2] > results[1] and results[2] > results[0]:
-        arrow[2] = " <---"
+    """
+    Prints results, which are a list
+    """
+
+    m_index = np.argmax(results)
+
+    arrow = ["", "", "", ""]
+    arrow[m_index] = " <---"
 
     print("Input: %s, %s" % (input_vec[0], input_vec[1]))
+
     print("Output:")
-    print("\tGroup 1: %s%s" % (results[0], arrow[0]))
-    print("\tGroup 2: %s%s" % (results[1], arrow[1]))
-    print("\tGroup 3: %s%s" % (results[2], arrow[2]))
+    for i, v in enumerate(results):
+        print("\tGroup %s: %s%s" % (i+1, results[i], arrow[i]))
+
     print("")
 
 
-if __name__ == "__main__":
-    # Neural network with 2 inputs, 3 middle layer neurons, a 1 output
-    net = NeuralNetwork([2, 2, 3])
+def makeRandomData(n):
+    """
+    Generates random data for some experiments. The data will consist of a
+    point with two coordinates. They will belong to one of four groups, which
+    are:
 
-    # Define a training example consisting of a point with two coordinates. If
-    # that point is inside a few areas, then the network should output 1,
-    # otherwise, it should output 0
+    Group 1: 0.0 <= px < 0.5 and 0.0 <= py < 0.5
+    Group 2: 0.0 <= px < 0.5 and 0.5 <= py <= 1.0
+    Group 3: 0.5 <= px <= 1.0 and 0.0 <= py < 0.5
+    Group 4: 0.5 <= px <= 1.0 and 0.5 <= py <= 1.0
+    """
+
     training = []
+    counts = [0] * 4
 
-    # Point inside area 1
-    g1 = g2 = g3 = 0
-    for i in range(1000):
+    for i in range(n):
         px = random.random()
         py = random.random()
 
@@ -40,38 +46,95 @@ if __name__ == "__main__":
             out_g1 = 1.0
             out_g2 = 0.0
             out_g3 = 0.0
-            g1 += 1
-        elif 0.5 <= px <= 1.0 and 0.5 <= py <= 1.0:
+            out_g4 = 0.0
+            counts[0] += 1
+        elif 0.0 <= px < 0.5 and 0.5 <= py <= 1.0:
             out_g1 = 0.0
             out_g2 = 1.0
             out_g3 = 0.0
-            g2 += 1
-        else:
+            out_g4 = 0.0
+            counts[1] += 1
+        elif 0.5 <= px <= 1.0 and 0.0 <= py < 0.5:
             out_g1 = 0.0
             out_g2 = 0.0
             out_g3 = 1.0
-            g3 += 1
+            out_g4 = 0.0
+            counts[2] += 1
+        else:
+            out_g1 = 0.0
+            out_g2 = 0.0
+            out_g3 = 0.0
+            out_g4 = 1.0
+            counts[3] += 1
 
-        training.append(([[px], [py]], [[out_g1], [out_g2], [out_g3]]))
+        training.append(([[px], [py]], [[out_g1], [out_g2], [out_g3], [out_g4]]))
 
-    print("Samples:")
-    print("\tGroup 1: %s" % (g1))
-    print("\tGroup 2: %s" % (g2))
-    print("\tGroup 3: %s" % (g3))
+    # Write some output
+    for i, v in enumerate(counts):
+        print("\tGroup %s: %s" % (i+1, v))
+
+    return training
+
+
+def makeRandomTests(net, test_data):
+    """
+    Uses test dataset to calculate a confusion matrix and a hit rate
+    """
+
+    correct = incorrect = 0
+    confusion = [[0 for i in range(4)] for j in range(4)]
+
+    for i in test_data:
+        input_val = np.array(i[0])
+        exp_output = np.array(i[1])
+
+        res = net.feedForward(input_val)
+
+        if np.argmax(res) == np.argmax(exp_output):
+            correct += 1
+        else:
+            incorrect += 1
+
+        confusion[np.argmax(exp_output)][np.argmax(res)] += 1
+
+    print("Correct: %s; Incorrect: %s" % (correct, incorrect))
+    print("Hit rate: %s" % (correct / len(test_data)))
+    print("Confusion matrix:")
+    for i in confusion:
+        print(i)
+
+
+def makeFixedTests(net):
+    tests = [np.array([[0.1], [0.3]]),
+             np.array([[0.1], [0.8]]),
+             np.array([[0.9], [0.2]]),
+             np.array([[0.8], [0.9]])]
+
+    for i in tests:
+        res = net.feedForward(i)
+        printResults(i, res)
+
+
+if __name__ == "__main__":
+    # Neural network with 2 inputs and 4 outputs
+    net = NeuralNetwork([2, 4])
+
+    # Make training and test data
+    print("=== Training Samples ===")
+    train_data = makeRandomData(5000)
+
     print("")
+    print("=== Random Testing Samples ===")
+    test_data = makeRandomData(1000)
 
-    print("Starting training")
-    net.train(training, its=300, step=1)
+    print("")
+    print("=== Starting training ===")
+    net.train(train_data, its=500, step=0.5, verbose=True)
 
-    net.feedForward(np.array([[0.0], [0.0]]))
-    printResults(np.array([[0.0], [0.0]]), net.activ[-1])
-    net.feedForward(np.array([[1.0], [1.0]]))
-    printResults(np.array([[1.0], [1.0]]), net.activ[-1])
-    net.feedForward(np.array([[0.2], [0.2]]))
-    printResults(np.array([[0.2], [0.2]]), net.activ[-1])
-    net.feedForward(np.array([[0.3], [0.7]]))
-    printResults(np.array([[0.3], [0.7]]), net.activ[-1])
-    net.feedForward(np.array([[0.8], [0.1]]))
-    printResults(np.array([[0.8], [0.1]]), net.activ[-1])
-    net.feedForward(np.array([[0.9], [0.9]]))
-    printResults(np.array([[0.9], [0.9]]), net.activ[-1])
+    print("")
+    print("=== Starting random tests ===")
+    makeRandomTests(net, test_data)
+
+    print("")
+    print("=== Trying hand fixed tests ===")
+    makeFixedTests(net)
