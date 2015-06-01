@@ -151,13 +151,15 @@ def calcHitRate(net):
 
 def default():
     net = NeuralNetwork([28*28, 15, 10])
-    trainNetwork(net, default_batch_size, default_train_its, default_train_step)
+    trainNetwork(net, default_batch_size, default_train_its,
+                 default_train_step)
     testNetwork(net)
 
 
 def exp_no_inner_layer():
     net = NeuralNetwork([28*28, 10])
-    trainNetwork(net, default_batch_size, default_train_its, default_train_step)
+    trainNetwork(net, default_batch_size, default_train_its,
+                 default_train_step)
     testNetwork(net)
 
 
@@ -167,7 +169,8 @@ def exp_var_inner_layer(res_file_name):
     for i in range(1, 21):
         print("Layer: %s" % (i))
         net = NeuralNetwork([28*28, i, 10])
-        trainNetwork(net, exp_batch_size, exp_train_its, exp_train_step, verbose=False)
+        trainNetwork(net, exp_batch_size, exp_train_its, exp_train_step,
+                     verbose=False)
         res.append(calcHitRate(net))
 
     # Plot

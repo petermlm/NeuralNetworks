@@ -70,7 +70,8 @@ def makeRandomData(n, verbose=True):
             out_g4 = 1.0
             counts[3] += 1
 
-        training.append(([[px], [py]], [[out_g1], [out_g2], [out_g3], [out_g4]]))
+        training.append(([[px], [py]],
+                         [[out_g1], [out_g2], [out_g3], [out_g4]]))
 
     if verbose:
         # Write some output
