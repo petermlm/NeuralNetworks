@@ -1,7 +1,7 @@
 import sys
 import random
-import numpy as np
 
+import numpy as np
 from matplotlib import pyplot
 
 from NN import NeuralNetwork
