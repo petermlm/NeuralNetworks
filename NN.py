@@ -19,6 +19,14 @@ class NeuralNetwork:
 
         # If not create it
         self.layers = layers
+        self.resetNetwork()
+
+    def resetNetwork(self):
+        """
+        Set values of weights and biases to initial values. Also cleans the
+        activation values of any previous execution of feeForward, and any
+        values of calculated errors
+        """
 
         self.weights = [2*np.random.random((iv, self.layers[i-1])) - 1
                         for i, iv in enumerate(self.layers)]

@@ -1,5 +1,8 @@
+import sys
 import random
 import numpy as np
+
+from matplotlib import pyplot
 
 from NN import NeuralNetwork
 
@@ -23,7 +26,7 @@ def printResults(input_vec, results):
     print("")
 
 
-def makeRandomData(n):
+def makeRandomData(n, verbose=True):
     """
     Generates random data for some experiments. The data will consist of a
     point with two coordinates. They will belong to one of four groups, which
@@ -69,9 +72,10 @@ def makeRandomData(n):
 
         training.append(([[px], [py]], [[out_g1], [out_g2], [out_g3], [out_g4]]))
 
-    # Write some output
-    for i, v in enumerate(counts):
-        print("\tGroup %s: %s" % (i+1, v))
+    if verbose:
+        # Write some output
+        for i, v in enumerate(counts):
+            print("\tGroup %s: %s" % (i+1, v))
 
     return training
 
@@ -104,6 +108,25 @@ def makeRandomTests(net, test_data):
         print(i)
 
 
+def calcHitRate(net, test_data):
+    """
+    Calculates hit rate given a few tests
+    """
+
+    correct = 0
+
+    for i in test_data:
+        input_val = np.array(i[0])
+        exp_output = np.array(i[1])
+
+        res = net.feedForward(input_val)
+
+        if np.argmax(res) == np.argmax(exp_output):
+            correct += 1
+
+    return correct / len(test_data)
+
+
 def makeFixedTests(net):
     tests = [np.array([[0.1], [0.3]]),
              np.array([[0.1], [0.8]]),
@@ -115,11 +138,9 @@ def makeFixedTests(net):
         printResults(i, res)
 
 
-if __name__ == "__main__":
-    # Neural network with 2 inputs and 4 outputs
+def default():
     net = NeuralNetwork([2, 4])
 
-    # Make training and test data
     print("=== Training Samples ===")
     train_data = makeRandomData(5000)
 
@@ -138,3 +159,82 @@ if __name__ == "__main__":
     print("")
     print("=== Trying hand fixed tests ===")
     makeFixedTests(net)
+
+
+def exp_its_var(res_file_name):
+    net = NeuralNetwork([2, 4])
+    train_data = makeRandomData(100, verbose=False)
+    test_data = makeRandomData(100, verbose=False)
+
+    res = []
+    for i in range(0, 1000, 50):
+        if i == 0:
+            continue
+
+        net.resetNetwork()
+        net.train(train_data, its=i, step=0.5)
+        res.append(calcHitRate(net, test_data))
+
+    # Plot
+    pyplot.plot(list(range(0, 1000, 50))[1:], res)
+    pyplot.savefig(res_file_name)
+    pyplot.close()
+
+
+def exp_step_var(res_file_name):
+    net = NeuralNetwork([2, 4])
+    train_data = makeRandomData(100, verbose=False)
+    test_data = makeRandomData(100, verbose=False)
+
+    res_i = []
+    res_net = []
+    i = 0.05
+    while i < 1.0:
+        net.resetNetwork()
+        net.train(train_data, its=500, step=i)
+        res_i.append(i)
+        res_net.append(calcHitRate(net, test_data))
+
+        i += 0.05
+
+    # Plot
+    pyplot.plot(res_i, res_net)
+    pyplot.savefig(res_file_name)
+    pyplot.close()
+
+
+def exp_train_var(res_file_name):
+    net = NeuralNetwork([2, 4])
+
+    res = []
+    test_data = makeRandomData(500, verbose=False)
+    for i in range(0, 5000, 100):
+        print(i)
+        if i == 0:
+            continue
+
+        train_data = makeRandomData(i, verbose=False)
+
+        net.resetNetwork()
+        net.train(train_data, its=500, step=0.5)
+        res.append(calcHitRate(net, test_data))
+
+    # Plot
+    pyplot.plot(list(range(0, 5000, 100))[1:], res)
+    pyplot.savefig(res_file_name)
+    pyplot.close()
+
+
+if __name__ == "__main__":
+    # If there are no arguments, just run the default experiment
+    if len(sys.argv) <= 1:
+        default()
+
+    elif sys.argv[1] == "its_var":
+        exp_its_var(sys.argv[1] + "_res.png")
+
+    elif sys.argv[1] == "step_var":
+        exp_step_var(sys.argv[1] + "_res.png")
+
+    elif sys.argv[1] == "train_var":
+        exp_train_var(sys.argv[1] + "_res.png")
