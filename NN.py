@@ -1,4 +1,5 @@
 import random
+import marshal
 
 
 import numpy as np
@@ -11,7 +12,12 @@ Neural Network
 
 
 class NeuralNetwork:
-    def __init__(self, layers):
+    def __init__(self, layers=None):
+        # Makes empty network
+        if layers is None:
+            return
+
+        # If not create it
         self.layers = layers
 
         self.weights = [2*np.random.random((iv, self.layers[i-1])) - 1
@@ -20,7 +26,7 @@ class NeuralNetwork:
                      for i, iv in enumerate(self.layers)]
         self.activ = [np.zeros((iv, 1))
                       for i, iv in enumerate(self.layers)]
-        self.errors = [[]] * len(self.layers)
+        self.errors = [np.array([])] * len(self.layers)
 
     def activate(self, z_val):
         """
@@ -151,3 +157,26 @@ class NeuralNetwork:
 
             for l, lv in enumerate(sum_cost_b):
                 self.bias[l] -= step/n * lv
+
+    def dump(self, serialization_file):
+        marshal.dump(self.layers, serialization_file)
+
+        for i in range(len(self.layers)):
+            marshal.dump(self.weights[i].tolist(), serialization_file)
+            marshal.dump(self.bias[i].tolist(), serialization_file)
+            marshal.dump(self.activ[i].tolist(), serialization_file)
+            marshal.dump(self.errors[i].tolist(), serialization_file)
+
+    def load(self, serialization_file):
+        self.layers = marshal.load(serialization_file)
+
+        self.weights = []
+        self.bias = []
+        self.activ = []
+        self.errors = []
+
+        for i in range(len(self.layers)):
+            self.weights.append(marshal.load(serialization_file))
+            self.bias.append(marshal.load(serialization_file))
+            self.activ.append(marshal.load(serialization_file))
+            self.errors.append(marshal.load(serialization_file))
