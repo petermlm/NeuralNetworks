@@ -2,6 +2,8 @@ import sys
 import random
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot
 
 from NN import NeuralNetwork
@@ -172,6 +174,8 @@ def exp_its_var(res_file_name):
         if i == 0:
             continue
 
+        print("Iterations: %s" % (i))
+
         net.resetNetwork()
         net.train(train_data, its=i, step=0.5)
         res.append(calcHitRate(net, test_data))
@@ -191,6 +195,8 @@ def exp_step_var(res_file_name):
     res_net = []
     i = 0.05
     while i < 1.0:
+        print("Step: %s" % (i))
+
         net.resetNetwork()
         net.train(train_data, its=500, step=i)
         res_i.append(i)
@@ -210,9 +216,10 @@ def exp_train_var(res_file_name):
     res = []
     test_data = makeRandomData(500, verbose=False)
     for i in range(0, 5000, 100):
-        print(i)
         if i == 0:
             continue
+
+        print("Train variables: %s" % (i))
 
         train_data = makeRandomData(i, verbose=False)
 
@@ -232,10 +239,10 @@ if __name__ == "__main__":
         default()
 
     elif sys.argv[1] == "its_var":
-        exp_its_var(sys.argv[1] + "_res.png")
+        exp_its_var("exp2_results/" + sys.argv[1] + "_res.png")
 
     elif sys.argv[1] == "step_var":
-        exp_step_var(sys.argv[1] + "_res.png")
+        exp_step_var("exp2_results/" + sys.argv[1] + "_res.png")
 
     elif sys.argv[1] == "train_var":
-        exp_train_var(sys.argv[1] + "_res.png")
+        exp_train_var("exp2_results/" + sys.argv[1] + "_res.png")

@@ -1,6 +1,8 @@
 import sys
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot
 
 from NN import NeuralNetwork
