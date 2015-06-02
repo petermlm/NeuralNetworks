@@ -45,7 +45,7 @@ def trainNetwork(net, batch_size, train_its, train_step, verbose=True):
     while i < imgs_num:
         training = []
 
-        for j in range(batch_size):
+        for j in range(min(batch_size, imgs_num-i)):
             net_in = [[k/255] for k in imgs.read(28*28)]
             net_out = [[0] for k in range(10)]
             net_out[ord(labels.read(1))][0] = 1.0

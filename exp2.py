@@ -9,6 +9,12 @@ from matplotlib import pyplot
 from NN import NeuralNetwork
 
 
+default_its = 500
+default_step = 0.5
+default_train = 1000
+default_test = 500
+
+
 def printResults(input_vec, results):
     """
     Prints results, which are a list
@@ -145,15 +151,15 @@ def default():
     net = NeuralNetwork([2, 4])
 
     print("=== Training Samples ===")
-    train_data = makeRandomData(5000)
+    train_data = makeRandomData(default_train)
 
     print("")
     print("=== Random Testing Samples ===")
-    test_data = makeRandomData(1000)
+    test_data = makeRandomData(default_test)
 
     print("")
     print("=== Starting training ===")
-    net.train(train_data, its=500, step=0.5, verbose=True)
+    net.train(train_data, its=default_its, step=default_step, verbose=True)
 
     print("")
     print("=== Starting random tests ===")
@@ -164,10 +170,14 @@ def default():
     makeFixedTests(net)
 
 
-def exp_its_var(res_file_name):
-    net = NeuralNetwork([2, 4])
-    train_data = makeRandomData(100, verbose=False)
-    test_data = makeRandomData(100, verbose=False)
+def exp_its_var(res_file_name, middle_layer=None):
+    if middle_layer is None:
+        net = NeuralNetwork([2, 4])
+    else:
+        net = NeuralNetwork([2, middle_layer, 4])
+
+    train_data = makeRandomData(default_train, verbose=False)
+    test_data = makeRandomData(default_test, verbose=False)
 
     res = []
     for i in range(0, 1000, 50):
@@ -177,7 +187,7 @@ def exp_its_var(res_file_name):
         print("Iterations: %s" % (i))
 
         net.resetNetwork()
-        net.train(train_data, its=i, step=0.5)
+        net.train(train_data, its=i, step=default_step)
         res.append(calcHitRate(net, test_data))
 
     # Plot
@@ -186,10 +196,14 @@ def exp_its_var(res_file_name):
     pyplot.close()
 
 
-def exp_step_var(res_file_name):
-    net = NeuralNetwork([2, 4])
-    train_data = makeRandomData(100, verbose=False)
-    test_data = makeRandomData(100, verbose=False)
+def exp_step_var(res_file_name, middle_layer=None):
+    if middle_layer is None:
+        net = NeuralNetwork([2, 4])
+    else:
+        net = NeuralNetwork([2, middle_layer, 4])
+
+    train_data = makeRandomData(default_train, verbose=False)
+    test_data = makeRandomData(default_test, verbose=False)
 
     res_i = []
     res_net = []
@@ -198,7 +212,7 @@ def exp_step_var(res_file_name):
         print("Step: %s" % (i))
 
         net.resetNetwork()
-        net.train(train_data, its=500, step=i)
+        net.train(train_data, its=default_its, step=i)
         res_i.append(i)
         res_net.append(calcHitRate(net, test_data))
 
@@ -210,8 +224,11 @@ def exp_step_var(res_file_name):
     pyplot.close()
 
 
-def exp_train_var(res_file_name):
-    net = NeuralNetwork([2, 4])
+def exp_train_var(res_file_name, middle_layer=None):
+    if middle_layer is None:
+        net = NeuralNetwork([2, 4])
+    else:
+        net = NeuralNetwork([2, middle_layer, 4])
 
     res = []
     test_data = makeRandomData(500, verbose=False)
@@ -224,7 +241,7 @@ def exp_train_var(res_file_name):
         train_data = makeRandomData(i, verbose=False)
 
         net.resetNetwork()
-        net.train(train_data, its=500, step=0.5)
+        net.train(train_data, its=default_its, step=default_step)
         res.append(calcHitRate(net, test_data))
 
     # Plot
@@ -237,12 +254,26 @@ if __name__ == "__main__":
     # If there are no arguments, just run the default experiment
     if len(sys.argv) <= 1:
         default()
+        exit()
 
-    elif sys.argv[1] == "its_var":
-        exp_its_var("exp2_results/" + sys.argv[1] + "_res.png")
+    # Check if there is any argument for middle layer
+    if len(sys.argv) == 3:
+        middle_layer = int(sys.argv[2])
+    else:
+        middle_layer = None
+
+    # Make name
+    name = "exp2_results/" + sys.argv[1]
+    if middle_layer is not None:
+        name += "_" + str(middle_layer)
+    name += "_res.png"
+
+    # Make experiment
+    if sys.argv[1] == "its_var":
+        exp_its_var(name, middle_layer)
 
     elif sys.argv[1] == "step_var":
-        exp_step_var("exp2_results/" + sys.argv[1] + "_res.png")
+        exp_step_var(name, middle_layer)
 
     elif sys.argv[1] == "train_var":
-        exp_train_var("exp2_results/" + sys.argv[1] + "_res.png")
+        exp_train_var(name, middle_layer)
