@@ -52,7 +52,7 @@ def trainNetwork(net, batch_size, train_its, train_step, verbose=True):
 
             training.append((net_in, net_out))
 
-            if verbose and i % 10 == 0:
+            if verbose and i % 1000 == 0:
                 print("Examples used: ", i)
 
             i += 1
