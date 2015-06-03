@@ -166,19 +166,26 @@ def exp_no_inner_layer():
 
 
 def exp_var_inner_layer(res_file_name):
-    res = []
+    # Clear output file
+    open(res_file_name, "w").close()
 
+    # Make every iteration
     for i in range(1, 21):
         print("Layer: %s" % (i))
+
         net = NeuralNetwork([28*28, i, 10])
         trainNetwork(net, exp_batch_size, exp_train_its, exp_train_step,
                      verbose=False)
-        res.append(calcHitRate(net))
 
-    # Plot
-    pyplot.plot(list(range(1, 21)), res)
-    pyplot.savefig(res_file_name)
-    pyplot.close()
+        with open(res_file_name, "a") as out_file:
+            out_file.write(str(i) + ";" + str(calcHitRate(net)))
+
+
+def exp_var_inner_layer_make_res():
+    # pyplot.plot(list(range(1, 21)), res)
+    # pyplot.savefig(res_file_name)
+    # pyplot.close()
+    pass
 
 
 if __name__ == "__main__":
@@ -190,4 +197,4 @@ if __name__ == "__main__":
         exp_no_inner_layer()
 
     elif sys.argv[1] == "var_inner_layer":
-        exp_var_inner_layer("mnist_var_inner_layer_res.png")
+        exp_var_inner_layer("mnist_exp_results/mnist_var_inner_layer_res.png")
