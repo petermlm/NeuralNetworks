@@ -9,10 +9,10 @@ from NN import NeuralNetwork
 
 
 # Need to be decompressed from mnist.tar file
-imgs_test = "mnist/t10k-images-idx3-ubyte"
-labels_test = "mnist/t10k-labels-idx1-ubyte"
-imgs_train = "mnist/train-images-idx3-ubyte"
-labels_train = "mnist/train-labels-idx1-ubyte"
+imgs_test = "mnist_exp/mnist/t10k-images-idx3-ubyte"
+labels_test = "mnist_exp/mnist/t10k-labels-idx1-ubyte"
+imgs_train = "mnist_exp/mnist/train-images-idx3-ubyte"
+labels_train = "mnist_exp/mnist/train-labels-idx1-ubyte"
 
 # Default values to be used by default experiment
 default_batch_size = 1  # Size of default batch for training
@@ -179,13 +179,6 @@ def exp_var_inner_layer(res_file_name):
 
         with open(res_file_name, "a") as out_file:
             out_file.write(str(i) + ";" + str(calcHitRate(net)) + "\n")
-
-
-def exp_var_inner_layer_make_res():
-    # pyplot.plot(list(range(1, 21)), res)
-    # pyplot.savefig(res_file_name)
-    # pyplot.close()
-    pass
 
 
 if __name__ == "__main__":

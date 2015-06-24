@@ -263,7 +263,7 @@ if __name__ == "__main__":
         middle_layer = None
 
     # Make name
-    name = "exp2_results/" + sys.argv[1]
+    name = "exp2/exp2_results/" + sys.argv[1]
     if middle_layer is not None:
         name += "_" + str(middle_layer)
     name += "_res.png"

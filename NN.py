@@ -1,3 +1,7 @@
+"""
+Neural network implementation.
+"""
+
 import random
 import marshal
 

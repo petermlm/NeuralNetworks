@@ -1,3 +1,9 @@
+"""
+This was just an implementation of perceptrons and sigmoids. They are not used
+in the NN implementation.
+"""
+
+
 import numpy as np
 
 
