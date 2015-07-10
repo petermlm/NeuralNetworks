@@ -15,17 +15,17 @@ imgs_train = "mnist_exp/mnist/train-images-idx3-ubyte"
 labels_train = "mnist_exp/mnist/train-labels-idx1-ubyte"
 
 # Default values to be used by default experiment
-default_batch_size = 1  # Size of default batch for training
+default_batch_size = 100  # Size of default batch for training
 default_train_its = 300  # Default number of iterations
 default_train_step = 0.5  # Default training step
 
 # Values to be used taken from best of experiment 2
-exp_batch_size = 1  # Size of default batch for training
+exp_batch_size = 100  # Size of default batch for training
 exp_train_its = 300  # Default number of iterations
 exp_train_step = 0.5  # Default training step
 
 
-def trainNetwork(net, batch_size, train_its, train_step, verbose=True):
+def trainNetwork(net, batch_size, train_its, train_step, verbose=True, cross_entropy=False):
     # Open images and labels files
     imgs = open(imgs_train, "rb")
     labels = open(labels_train, "rb")
@@ -57,7 +57,7 @@ def trainNetwork(net, batch_size, train_its, train_step, verbose=True):
 
             i += 1
 
-        net.train(training, its=train_its, step=train_step)
+        net.train(training, its=train_its, step=train_step, cross_entropy=cross_entropy)
 
     # Close the files
     imgs.close()
@@ -181,6 +181,13 @@ def exp_var_inner_layer(res_file_name):
             out_file.write(str(i) + ";" + str(calcHitRate(net)) + "\n")
 
 
+def exp_500():
+    net = NeuralNetwork([28*28, 500, 10])
+    trainNetwork(net, default_batch_size, default_train_its,
+                 default_train_step, cross_entropy=True)
+    testNetwork(net)
+
+
 if __name__ == "__main__":
     # If there are no arguments, just run the default experiment
     if len(sys.argv) <= 1:
@@ -191,3 +198,6 @@ if __name__ == "__main__":
 
     elif sys.argv[1] == "var_inner_layer":
         exp_var_inner_layer("mnist_exp_results/mnist_var_inner_layer_res")
+
+    elif sys.argv[1] == "500":
+        exp_500()

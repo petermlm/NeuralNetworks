@@ -62,7 +62,7 @@ class NeuralNetwork:
 
         return self.activ[-1]
 
-    def backPropagation(self, input_vals, output_vals):
+    def backPropagation(self, input_vals, output_vals, cross_entropy):
         """
         Does the Back Propagation algorithm for one sample
         """
@@ -71,7 +71,11 @@ class NeuralNetwork:
         self.feedForward(input_vals)
 
         # Calculate the derivatives using the four equations
-        self.step1(output_vals)  # Output error
+        # Output error
+        if cross_entropy:
+            self.step1_ce(output_vals)
+        else:
+            self.step1(output_vals)
         self.step2()  # Back propagate error
         self.step3()  # Calculate the gradient of cost with respect to bias
         self.step4()  # Calculate the gradient of cost with respect to weights
@@ -92,6 +96,15 @@ class NeuralNetwork:
 
         self.errors[L] = deriv_vec * sig_vec
 
+    def step1_ce(self, target):
+        """
+        Output error, or error for last layer
+        """
+
+        L = len(self.layers) - 1
+
+        self.errors[L] = self.activ[L] - target
+
     def step2(self):
         """
         Error for layers L-1 to 2, back propagation
@@ -111,14 +124,16 @@ class NeuralNetwork:
 
     def step3(self):
         """
-        Gradient of cost function in order of the biases
+        Gradient of cost function in order of the biases. Function is Quadratic
+        Cost.
         """
 
         self.cost_b = self.errors
 
     def step4(self):
         """
-        Gradient of cost function in order of the weights
+        Gradient of cost function in order of the weights. Function is
+        Quadratic Cost.
         """
 
         self.cost_w = [[]]
@@ -127,7 +142,8 @@ class NeuralNetwork:
             deriv = np.dot(self.errors[l], self.activ[l-1].T)
             self.cost_w.append(deriv)
 
-    def train(self, training_set, its=300, step=0.5, verbose=False):
+    def train(self, training_set, its=300, step=0.5, verbose=False,
+              cross_entropy=False):
         """
         Given a training set, train the weights and biases of the network using
         gradient descent. Back Propagation is used to calculate the derivatives
@@ -155,7 +171,7 @@ class NeuralNetwork:
 
             # Run every training example and sum its gradient
             for i in training_set:
-                self.backPropagation(i[0], i[1])
+                self.backPropagation(i[0], i[1], cross_entropy)
 
                 for l, vl in enumerate(self.cost_w[1:], 1):
                     sum_cost_w[l] += self.cost_w[l]
