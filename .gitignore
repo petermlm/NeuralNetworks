@@ -1,6 +1,4 @@
 __pycache__
-mnist_exp/mnist/
+exps/mnist/mnist/
 *.swp
-exp1_network_file
-exp1_ce_network_file
 exp1_network_file
