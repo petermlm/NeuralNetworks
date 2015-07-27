@@ -171,7 +171,7 @@ def exp_var_inner_layer(res_file_name):
     open(res_file_name, "w").close()
 
     # Make every iteration
-    for i in range(1, 21):
+    for i in range(10, 21):
         # print("Layer: %s" % (i))
 
         net = NeuralNetwork([28*28, i, 10])

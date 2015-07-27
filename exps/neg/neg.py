@@ -87,10 +87,10 @@ if __name__ == "__main__":
     """
 
     # Dump the network into a file, load it and test it again
-    with open("exp1_network_file", "wb") as f:
+    with open("neg_network_file", "wb") as f:
         net.dump(f)
 
-    with open("exp1_network_file", "rb") as f:
+    with open("neg_network_file", "rb") as f:
         net.load(f)
 
     print("")
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     print(net.feedForward(np.array([0.2])))
 
     """
-    Create a network from serializtion
+    Create a network from serialization
     """
 
     # New network
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     print("Creating new network from serialization:")
 
     new_net = NeuralNetwork()
-    with open("exp1_network_file", "rb") as f:
+    with open("neg_network_file", "rb") as f:
         new_net.load(f)
 
     print(new_net.feedForward(np.array([1])))
