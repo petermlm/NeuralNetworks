@@ -24,9 +24,10 @@ if __name__ == "__main__":
     imgs_reader = csv.reader(imgs, delimiter=',')
 
     # Make the output
-    print("Result")
+    print("ImageId,Label")
 
     first = True
+    index = 0
     for i in imgs_reader:
         if first:
             first = False
@@ -34,7 +35,9 @@ if __name__ == "__main__":
 
         net_in = [[int(j)/255] for j in i]
         res = np.argmax(net.feedForward(np.array(net_in)))
-        print(res)
+        print("%s,%s", (index+1, res))
+
+        index += 1
 
     # Close the file
     imgs.close()
