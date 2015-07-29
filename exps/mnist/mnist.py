@@ -10,10 +10,10 @@ from NN import NeuralNetwork
 
 
 # Need to be decompressed from mnist.tar file
-imgs_test = "mnist_exp/mnist/t10k-images-idx3-ubyte"
-labels_test = "mnist_exp/mnist/t10k-labels-idx1-ubyte"
-imgs_train = "mnist_exp/mnist/train-images-idx3-ubyte"
-labels_train = "mnist_exp/mnist/train-labels-idx1-ubyte"
+imgs_test = "mnist/t10k-images-idx3-ubyte"
+labels_test = "mnist/t10k-labels-idx1-ubyte"
+imgs_train = "mnist/train-images-idx3-ubyte"
+labels_train = "mnist/train-labels-idx1-ubyte"
 
 # Default values to be used by default experiment
 default_batch_size = 100  # Size of default batch for training
@@ -186,7 +186,12 @@ def exp_500():
     net = NeuralNetwork([28*28, 500, 10])
     trainNetwork(net, default_batch_size, default_train_its,
                  default_train_step, cross_entropy=True)
+
     testNetwork(net)
+
+    # Dump the network into a file, load it and test it again
+    with open("mnist_500_network_file", "wb") as f:
+        net.dump(f)
 
 
 if __name__ == "__main__":
