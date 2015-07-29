@@ -2,9 +2,6 @@ import sys
 sys.path.append("../..")
 
 import numpy as np
-import matplotlib
-matplotlib.use("Agg")
-from matplotlib import pyplot
 
 from NN import NeuralNetwork
 
@@ -190,7 +187,7 @@ def exp_500():
     testNetwork(net)
 
     # Dump the network into a file, load it and test it again
-    with open("mnist_500_network_file", "wb") as f:
+    with open("network_files/mnist_500_network_file", "wb") as f:
         net.dump(f)
 
 
