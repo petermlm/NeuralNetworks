@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
         net_in = [[int(j)/255] for j in i]
         res = np.argmax(net.feedForward(np.array(net_in)))
-        print("%s,%s", (index+1, res))
+        print("%s,%s" % (index+1, res))
 
         index += 1
 
