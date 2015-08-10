@@ -13,7 +13,7 @@ from NN import NeuralNetwork
 
 default_its = 1000
 default_step = 1.0
-default_mini_batch_size = 10
+default_mini_batch_size = 100
 default_train = 1000
 default_test = 500
 
@@ -190,7 +190,7 @@ def exp_its_var(res_file_name, middle_layer=None):
         print("Iterations: %s" % (i))
 
         net.resetNetwork()
-        net.train(train_data, its=i, step=default_step, cross_entropy=True)
+        net.train(train_data, its=default_its, step=default_step, mini_batch_size=default_mini_batch_size, cross_entropy=True)
         res.append(calcHitRate(net, test_data))
 
     # Plot
@@ -215,7 +215,7 @@ def exp_step_var(res_file_name, middle_layer=None):
         print("Step: %s" % (i))
 
         net.resetNetwork()
-        net.train(train_data, its=default_its, step=i, cross_entropy=True)
+        net.train(train_data, its=default_its, step=default_step, mini_batch_size=default_mini_batch_size, cross_entropy=True)
         res_i.append(i)
         res_net.append(calcHitRate(net, test_data))
 
@@ -244,7 +244,7 @@ def exp_train_var(res_file_name, middle_layer=None):
         train_data = makeRandomData(i, verbose=False)
 
         net.resetNetwork()
-        net.train(train_data, its=default_its, step=default_step, cross_entropy=True)
+        net.train(train_data, its=default_its, step=default_step, mini_batch_size=default_mini_batch_size, cross_entropy=True)
         res.append(calcHitRate(net, test_data))
 
     # Plot
