@@ -142,7 +142,7 @@ class NeuralNetwork:
             deriv = np.dot(self.errors[l], self.activ[l-1].T)
             self.cost_w.append(deriv)
 
-    def train(self, training_set, its=300, step=0.5, verbose=False,
+    def train(self, training_set, its=300, step=0.5, mini_batch_size=10, verbose=False,
               cross_entropy=False):
         """
         Given a training set, train the weights and biases of the network using
@@ -169,8 +169,12 @@ class NeuralNetwork:
             sum_cost_b = [np.zeros((iv, 1))
                           for i, iv in enumerate(self.layers)]
 
-            # Run every training example and sum its gradient
-            for i in training_set:
+            # Generate a mini batch
+            random.shuffle(training_set)
+            mini_batch = [training_set[i] for i in range(mini_batch_size)]
+
+            # Run a mini batch and sum its gradient
+            for i in mini_batch:
                 self.backPropagation(i[0], i[1], cross_entropy)
 
                 for l, vl in enumerate(self.cost_w[1:], 1):

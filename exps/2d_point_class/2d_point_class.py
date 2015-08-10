@@ -11,8 +11,9 @@ from matplotlib import pyplot
 from NN import NeuralNetwork
 
 
-default_its = 500
-default_step = 0.5
+default_its = 1000
+default_step = 1.0
+default_mini_batch_size = 10
 default_train = 1000
 default_test = 500
 
@@ -161,7 +162,7 @@ def default():
 
     print("")
     print("=== Starting training ===")
-    net.train(train_data, its=default_its, step=default_step, verbose=True, cross_entropy=True)
+    net.train(train_data, its=default_its, step=default_step, mini_batch_size=default_mini_batch_size, verbose=True, cross_entropy=True)
 
     print("")
     print("=== Starting random tests ===")
