@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     # Train the network
     print("Starting training")
-    net.train(training, its=300, step=0.5, verbose=True)
+    net.train(training, its=300, step=1.0, mini_batch_size=100, verbose=True, cross_entropy=True)
 
     print("")
     print("Results:")
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     # Train the network
     print("Starting training")
-    net.train(training, its=300, step=0.5, verbose=True, cross_entropy=True)
+    net.train(training, its=300, step=1.0, mini_batch_size=100, verbose=True, cross_entropy=True)
 
     print("")
     print("Results with Cross Entropy cost function:")
