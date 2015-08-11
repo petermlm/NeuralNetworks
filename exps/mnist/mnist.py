@@ -13,17 +13,12 @@ imgs_train = "mnist/train-images-idx3-ubyte"
 labels_train = "mnist/train-labels-idx1-ubyte"
 
 # Default values to be used by default experiment
-default_batch_size = 100  # Size of default batch for training
-default_train_its = 300  # Default number of iterations
-default_train_step = 0.5  # Default training step
-
-# Values to be used taken from best of experiment 2
-exp_batch_size = 100  # Size of default batch for training
-exp_train_its = 300  # Default number of iterations
-exp_train_step = 0.5  # Default training step
+default_its = 400  # Default number of iterations
+default_step = 0.5  # Default training step
+default_mini_batch_size = 10  # Default mini batch size
 
 
-def trainNetwork(net, batch_size, train_its, train_step, verbose=True, cross_entropy=True):
+def trainNetwork(net, verbose=True, cross_entropy=True):
     # Open images and labels files
     imgs = open(imgs_train, "rb")
     labels = open(labels_train, "rb")
@@ -38,24 +33,24 @@ def trainNetwork(net, batch_size, train_its, train_step, verbose=True, cross_ent
     labels.read(4)  # Magic number
     labels_num = int.from_bytes(labels.read(4), "big")  # Number of labels
 
+    if verbose:
+        print("Reading images and labels for training")
+
     # Read some images and labels
-    i = 0
-    while i < imgs_num:
-        training = []
+    training = []
 
-        for j in range(min(batch_size, imgs_num-i)):
-            net_in = [[k/255] for k in imgs.read(28*28)]
-            net_out = [[0] for k in range(10)]
-            net_out[ord(labels.read(1))][0] = 1.0
+    for i in range(imgs_num):
+        if verbose and i % 10000 == 0:
+            print("Read: %s" %(i))
 
-            training.append((net_in, net_out))
+        net_in = [[k/255] for k in imgs.read(28*28)]
+        net_out = [[0] for k in range(10)]
+        net_out[ord(labels.read(1))][0] = 1.0
 
-            if verbose and i % 1000 == 0:
-                print("Examples used: ", i)
+        training.append((net_in, net_out))
 
-            i += 1
-
-        net.train(training, its=train_its, step=train_step, cross_entropy=cross_entropy)
+    # Train the network
+    net.train(training, its=default_its, step=default_step, mini_batch_size=default_mini_batch_size, verbose=verbose, cross_entropy=cross_entropy)
 
     # Close the files
     imgs.close()
@@ -151,15 +146,13 @@ def calcHitRate(net):
 
 def default():
     net = NeuralNetwork([28*28, 15, 10])
-    trainNetwork(net, default_batch_size, default_train_its,
-                 default_train_step)
+    trainNetwork(net, verbose=True)
     testNetwork(net)
 
 
 def exp_no_inner_layer():
     net = NeuralNetwork([28*28, 10])
-    trainNetwork(net, default_batch_size, default_train_its,
-                 default_train_step)
+    trainNetwork(net, verbose=True)
     testNetwork(net)
 
 
@@ -168,12 +161,11 @@ def exp_var_inner_layer(res_file_name):
     open(res_file_name, "w").close()
 
     # Make every iteration
-    for i in range(10, 21):
-        # print("Layer: %s" % (i))
+    for i in range(10, 500, 10):
+        print("Inner Layer: %s" % (i))
 
         net = NeuralNetwork([28*28, i, 10])
-        trainNetwork(net, exp_batch_size, exp_train_its, exp_train_step,
-                     verbose=False)
+        trainNetwork(net, verbose=False)
 
         with open(res_file_name, "a") as out_file:
             out_file.write(str(i) + ";" + str(calcHitRate(net)) + "\n")
@@ -181,8 +173,7 @@ def exp_var_inner_layer(res_file_name):
 
 def exp_500():
     net = NeuralNetwork([28*28, 500, 10])
-    trainNetwork(net, default_batch_size, default_train_its,
-                 default_train_step, cross_entropy=True)
+    trainNetwork(net, cross_entropy=True)
 
     testNetwork(net)
 
@@ -200,7 +191,7 @@ if __name__ == "__main__":
         exp_no_inner_layer()
 
     elif sys.argv[1] == "var_inner_layer":
-        exp_var_inner_layer("mnist_exp_results/mnist_var_inner_layer_res")
+        exp_var_inner_layer("mnist_results/mnist_var_inner_layer_res")
 
     elif sys.argv[1] == "500":
         exp_500()

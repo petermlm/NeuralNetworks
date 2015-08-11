@@ -11,9 +11,9 @@ from matplotlib import pyplot
 from NN import NeuralNetwork
 
 
-default_its = 1000
-default_step = 1.0
-default_mini_batch_size = 100
+default_its = 400
+default_step = 0.5
+default_mini_batch_size = 10
 default_train = 1000
 default_test = 500
 

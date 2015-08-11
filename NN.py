@@ -163,32 +163,38 @@ class NeuralNetwork:
             if verbose and it % 10 == 0:
                 print("Iterations:", it)
 
-            # Will have the sums of gradients for all examples
-            sum_cost_w = [np.zeros((iv, self.layers[i-1]))
-                          for i, iv in enumerate(self.layers)]
-            sum_cost_b = [np.zeros((iv, 1))
-                          for i, iv in enumerate(self.layers)]
-
             # Generate a mini batch
             random.shuffle(training_set)
-            mini_batch = [training_set[i] for i in range(mini_batch_size)]
+            mini_batches = []
 
-            # Run a mini batch and sum its gradient
-            for i in mini_batch:
-                self.backPropagation(i[0], i[1], cross_entropy)
+            for i in range(0, len(training_set), mini_batch_size):
+                mini_batch = [training_set[j]
+                        for j in range(i, i+mini_batch_size)]
+                mini_batches.append(mini_batch)
 
-                for l, vl in enumerate(self.cost_w[1:], 1):
-                    sum_cost_w[l] += self.cost_w[l]
+            for mini_batch in mini_batches:
+                # Will have the sums of gradients for all examples
+                sum_cost_w = [np.zeros((iv, self.layers[i-1]))
+                              for i, iv in enumerate(self.layers)]
+                sum_cost_b = [np.zeros((iv, 1))
+                              for i, iv in enumerate(self.layers)]
 
-                for l, vl in enumerate(self.cost_b[1:], 1):
-                    sum_cost_b[l] += self.cost_b[l]
+                # Run a mini batch and sum its gradient
+                for i in mini_batch:
+                    self.backPropagation(i[0], i[1], cross_entropy)
 
-            # Update weights and biases using the rules
-            for l, lv in enumerate(sum_cost_w[1:], 1):
-                self.weights[l] -= step/n * lv
+                    for l, vl in enumerate(self.cost_w[1:], 1):
+                        sum_cost_w[l] += self.cost_w[l]
 
-            for l, lv in enumerate(sum_cost_b):
-                self.bias[l] -= step/n * lv
+                    for l, vl in enumerate(self.cost_b[1:], 1):
+                        sum_cost_b[l] += self.cost_b[l]
+
+                # Update weights and biases using the rules
+                for l, lv in enumerate(sum_cost_w[1:], 1):
+                    self.weights[l] -= step/n * lv
+
+                for l, lv in enumerate(sum_cost_b):
+                    self.bias[l] -= step/n * lv
 
     def dump(self, serialization_file):
         marshal.dump(self.layers, serialization_file)
